@@ -1,6 +1,6 @@
 # Publish Times
 
-This is a very simple console application that generates a list of times to schedule news with a 2-3 hour delay with a 30 minute time gap per-article.
+This is a very simple console application that generates a list of times to schedule news with a 2-3 hour delay and a 30 minute time gap per-article.
 
 ## License
 

@@ -1,3 +1,4 @@
+// I hereby waive this project under the public domain - see UNLICENSE for details.
 const string banner = "=== Publish Times ===";
 
 var numberOfArticles = 5; // Define how many articles to schedule
