@@ -5,6 +5,7 @@ var numberOfArticles = 5; // Define how many articles to schedule
 var startTime = new TimeSpan(9, 0, 0); // Starting time at 9:00 AM
 var random = new Random();
 var scheduledTimes = new List<TimeSpan>();
+var storeSchedule = new List<String>();
 
 for (int i = 0; i < numberOfArticles; i++)
 {
@@ -40,6 +41,46 @@ string TimeSpanToAMPM(TimeSpan time)
 Console.WriteLine(banner);
 foreach (var time in scheduledTimes)
 {
+    var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {TimeSpanToAMPM(time)}";
     // Correct format string to display time in 12-hour format with AM/PM
-    Console.WriteLine($"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {TimeSpanToAMPM(time)}");
+    Console.WriteLine(articleTime);
+    // Store the schedule to memory for option export
+    storeSchedule.Add(articleTime);
+}
+
+// Give the user an option to export the schedule
+Console.WriteLine("Export? Y/N");
+
+if (Console.ReadKey().Key == ConsoleKey.Y)
+{
+    var appPath = Directory.GetCurrentDirectory();
+    var scheduleFile = "schedule.txt";
+    var filePath = Path.Combine(appPath, scheduleFile);
+    var appendSchedule = false;
+
+    // If the file already exists, assume the schedule was written
+    if (File.Exists(filePath))
+    {
+        Console.WriteLine($"{Environment.NewLine}Add another schedule? Y/N");
+        if (Console.ReadKey().Key == ConsoleKey.Y)
+            appendSchedule = true;
+    }
+
+    // Write to file.
+    using (var outputFile = new StreamWriter(Path.Combine(appPath, scheduleFile), appendSchedule))
+    {
+        // Add separator between times
+        if (appendSchedule)
+            outputFile.WriteLine("                ---");
+
+        foreach (var line in storeSchedule)
+            outputFile.WriteLine(line);
+    }
+
+    // Clear list and start over
+    storeSchedule.Clear();
+}
+else
+{
+    Environment.Exit(Environment.ExitCode);
 }
