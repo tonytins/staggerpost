@@ -58,7 +58,7 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
     var filePath = Path.Combine(appPath, scheduleFile);
     var appendSchedule = false;
 
-    // If the file already exists, assume the schedule was written
+    // If the file already exists, assume a previous schedule was written
     if (File.Exists(filePath))
     {
         Console.WriteLine($"{Environment.NewLine}Add another schedule? Y/N");
@@ -77,7 +77,7 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
             outputFile.WriteLine(line);
     }
 
-    // Clear list and start over
+    // Clear list from memory before exit
     storeSchedule.Clear();
 }
 else
