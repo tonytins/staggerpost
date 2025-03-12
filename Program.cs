@@ -34,14 +34,12 @@ List<TimeSpan> GenerateSchedule()
     return scheduledTimes;
 }
 
-
-
 /// <summary>
 /// Converts a TimeSpan into a 12-hour AM/PM formatted time string.
 /// </summary>
 /// <param name="time">The TimeSpan representing the time of day.</param>
 /// <returns>A formatted string representing the time in AM/PM format.</returns>
-string TimeSpanToAMPM(TimeSpan time)
+string ConvertTo12Hour(TimeSpan time)
 {
     var minutes = time.TotalMinutes;
     var hours12 = time.Hours % 12;
@@ -140,7 +138,7 @@ void PrintSchedule(bool isRestart = false)
     Console.WriteLine("=== Publish Times ===");
     foreach (var time in scheduledTimes)
     {
-        var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {TimeSpanToAMPM(time)}";
+        var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {ConvertTo12Hour(time)}";
         // Correct format string to display time in 12-hour format with AM/PM
         Console.WriteLine(articleTime);
         // Store the schedule to memory for option export
