@@ -10,6 +10,7 @@ var storeSchedule = new List<String>();
 var appDir = Directory.GetCurrentDirectory();
 // File directory is used for file location set in config
 var fileDir = Directory.GetCurrentDirectory();
+var isRestart = false;
 var communities = new[] { "Games", "Politics", "Research", "Technology" };
 var scheduleFile = "schedule.txt";
 var cfgFile = "config.toml";
@@ -45,20 +46,8 @@ string TimeSpanToAMPM(TimeSpan time)
     return $"{hours12}:{time.Minutes:D2} {period}";
 }
 
-Console.WriteLine(banner);
-foreach (var time in scheduledTimes)
-{
-    var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {TimeSpanToAMPM(time)}";
-    // Correct format string to display time in 12-hour format with AM/PM
-    Console.WriteLine(articleTime);
-    // Store the schedule to memory for option export
-    storeSchedule.Add(articleTime);
-}
 
-// Give the user an option to export the schedule
-Console.WriteLine("Export? Y/N");
-
-if (Console.ReadKey().Key == ConsoleKey.Y)
+void ExportSchedule()
 {
     var cfgPath = Path.Combine(appDir, cfgFile);
     var filePath = Path.Combine(fileDir, scheduleFile);
@@ -72,10 +61,10 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
     if (File.Exists(cfgPath))
     {
         var toml = File.ReadAllText(cfgPath);
-        var model = Toml.ToModel(toml);
-        var usrDir = (string)model["path"];
-        var usrFileName = (string)model["file"];
-        var tomlList = string.Join(", ", (TomlArray)model["topics"]);
+        var model = Toml.ToModel<Config>(toml);
+        var usrDir = model.Path;
+        var usrFileName = model.File;
+        var tomlList = string.Join(", ", model.Topics);
         var usrList = tomlList.Split(',');
 
         if (!string.IsNullOrEmpty(usrDir))
@@ -101,17 +90,52 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
         Console.WriteLine($"{Environment.NewLine}Add another schedule? Y/N");
         if (Console.ReadKey().Key == ConsoleKey.Y)
             appendSchedule = true;
+
+        // Write to file.
+        using (var outputFile = new StreamWriter(filePath, appendSchedule))
+        {
+            outputFile.WriteLine($"        === {topic} ===");
+            foreach (var line in storeSchedule)
+                outputFile.WriteLine(line);
+        }
     }
 
-    // Write to file.
-    using (var outputFile = new StreamWriter(filePath, appendSchedule))
-    {
+    // Clear list from memory before exit
+    storeSchedule.Clear();
 
-        outputFile.WriteLine($"        === {topic} ===");
-        foreach (var line in storeSchedule)
-            outputFile.WriteLine(line);
+}
+
+void PrintSchedule()
+{
+    if (isRestart)
+        Console.Clear();
+
+    Console.WriteLine(banner);
+    foreach (var time in scheduledTimes)
+    {
+        var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {TimeSpanToAMPM(time)}";
+        // Correct format string to display time in 12-hour format with AM/PM
+        Console.WriteLine(articleTime);
+        // Store the schedule to memory for option export
+        storeSchedule.Add(articleTime);
+    }
+
+    // Give the user an option to export the schedule
+    Console.WriteLine($"{Environment.NewLine}Export? Y/N");
+    if (Console.ReadKey().Key == ConsoleKey.Y)
+        ExportSchedule();
+
+    Console.WriteLine($"{Environment.NewLine}Start Over? Y/N");
+    if (Console.ReadKey().Key == ConsoleKey.Y)
+    {
+        isRestart = true;
+        PrintSchedule();
+    }
+    else
+    {
+        Console.Clear();
+        Environment.Exit(Environment.ExitCode);
     }
 }
 
-// Clear list from memory before exit
-storeSchedule.Clear();
+PrintSchedule();
