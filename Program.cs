@@ -1,38 +1,40 @@
 // I hereby waive this project under the public domain - see UNLICENSE for details.
-const string banner = "=== Publish Times ===";
 
-var numberOfArticles = 5; // Define how many articles to schedule
-var startTime = new TimeSpan(9, 0, 0); // Starting time at 9:00 AM
-var rng = new Random();
-var scheduledTimes = new List<TimeSpan>();
-var storeSchedule = new List<String>();
-// App directory is used for config file
-var appDir = Directory.GetCurrentDirectory();
-// File directory is used for file location set in config
-var fileDir = Directory.GetCurrentDirectory();
-var isRestart = false;
-var communities = new[] { "Games", "Politics", "Research", "Technology" };
-var scheduleFile = "schedule.txt";
-var cfgFile = "config.toml";
-
-for (int i = 0; i < numberOfArticles; i++)
+/// <summary>
+/// Generates a schedule of article publishing times, ensuring a randomized
+/// delay between each while avoiding time conflicts within a 30-minute window.
+/// </summary>
+/// <returns>A list of TimeSpan objects representing scheduled article times.</returns>
+List<TimeSpan> GenerateSchedule()
 {
-    var baseDelayHours = rng.Next(2, 4); // Randomly choose between 2-3 hours delay
-    var minutesToAdd = rng.Next(0, 60); // Randomly choose minutes (0-59)
+    var numberOfArticles = 5; // Define how many articles to schedule
+    var startTime = new TimeSpan(9, 0, 0); // Starting time at 9:00 AM
+    var rng = new Random();
+    var scheduledTimes = new List<TimeSpan>();
 
-    // Calculate new time by adding base delay and random minutes
-    var nextTime = startTime.Add(new TimeSpan(baseDelayHours, minutesToAdd, 0));
-
-    // Check if the new time is within 30 minutes of any existing time
-    while (scheduledTimes.Exists(previousTime => Math.Abs((nextTime - previousTime).TotalMinutes) < 30))
+    for (int i = 0; i < numberOfArticles; i++)
     {
-        // If the new time is within 30 minutes of an existing time, adjust it
-        nextTime = nextTime.Add(new TimeSpan(0, 30, 0));
+        var baseDelayHours = rng.Next(2, 4); // Randomly choose between 2-3 hours delay
+        var minutesToAdd = rng.Next(0, 60); // Randomly choose minutes (0-59)
+
+        // Calculate new time by adding base delay and random minutes
+        var nextTime = startTime.Add(new TimeSpan(baseDelayHours, minutesToAdd, 0));
+
+        // Check if the new time is within 30 minutes of any existing time
+        while (scheduledTimes.Exists(previousTime => Math.Abs((nextTime - previousTime).TotalMinutes) < 30))
+        {
+            // If the new time is within 30 minutes of an existing time, adjust it
+            nextTime = nextTime.Add(new TimeSpan(0, 30, 0));
+        }
+
+        scheduledTimes.Add(nextTime);
+        startTime = nextTime; // Update start time for the next article
     }
 
-    scheduledTimes.Add(nextTime);
-    startTime = nextTime; // Update start time for the next article
+    return scheduledTimes;
 }
+
+
 
 /// <summary>
 /// Converts a TimeSpan into a 12-hour AM/PM formatted time string.
@@ -56,13 +58,22 @@ string TimeSpanToAMPM(TimeSpan time)
 /// the directory, filename, and list of topics based on
 /// a configuration file if available.
 /// </summary>
-void ExportSchedule()
+void ExportSchedule(List<String> storeSchedule)
 {
+    // App directory is used for config file
+    var appDir = Directory.GetCurrentDirectory();
+    // File directory is used for file location set in config
+    var fileDir = Directory.GetCurrentDirectory();
+    var communities = new[] { "Games", "Politics", "Research", "Technology" };
+    var scheduleFile = "schedule.txt";
+    var cfgFile = "config.toml";
+
     var cfgPath = Path.Combine(appDir, cfgFile);
     var filePath = Path.Combine(fileDir, scheduleFile);
     var appendSchedule = false;
     var topic = "";
 
+    var rng = new Random();
     var chooseTopic = rng.Next(0, communities.Length);
     topic = communities[chooseTopic];
 
@@ -118,12 +129,15 @@ void ExportSchedule()
 /// Displays the scheduled article times in a formatted manner and provides
 /// options to export the schedule or restart the scheduling process.
 /// </summary>
-void PrintSchedule()
+void PrintSchedule(bool isRestart = false)
 {
+    var storeSchedule = new List<String>();
+    var scheduledTimes = GenerateSchedule();
+
     if (isRestart)
         Console.Clear();
 
-    Console.WriteLine(banner);
+    Console.WriteLine("=== Publish Times ===");
     foreach (var time in scheduledTimes)
     {
         var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {TimeSpanToAMPM(time)}";
@@ -136,14 +150,11 @@ void PrintSchedule()
     // Give the user an option to export the schedule
     Console.WriteLine($"{Environment.NewLine}Export? Y/N");
     if (Console.ReadKey().Key == ConsoleKey.Y)
-        ExportSchedule();
+        ExportSchedule(storeSchedule);
 
     Console.WriteLine($"{Environment.NewLine}Start Over? Y/N");
     if (Console.ReadKey().Key == ConsoleKey.Y)
-    {
-        isRestart = true;
-        PrintSchedule();
-    }
+        PrintSchedule(true);
     else
     {
         Console.Clear();
