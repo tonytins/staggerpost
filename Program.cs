@@ -75,20 +75,21 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
         var model = Toml.ToModel(toml);
         var usrDir = (string)model["path"];
         var usrFileName = (string)model["file"];
-        // var usrList = (string[])model["communities"];
+        var tomlList = string.Join(", ", (TomlArray)model["topics"]);
+        var usrList = tomlList.Split(',');
 
         if (!string.IsNullOrEmpty(usrDir))
             fileDir = usrDir;
 
         if (!string.IsNullOrEmpty(usrFileName))
             scheduleFile = usrFileName;
-        /*
-                if (usrList.Length > 0)
-                {
-                    var chooseUsrTopic = rng.Next(0, usrList.Length);
-                    topic = usrList[chooseUsrTopic];
-                }
-        */
+
+        if (usrList.Length > 0)
+        {
+            var chooseUsrTopic = rng.Next(0, usrList.Length);
+            topic = usrList[chooseUsrTopic];
+        }
+
 
         // Set new file Path
         filePath = Path.Combine(fileDir, scheduleFile);
