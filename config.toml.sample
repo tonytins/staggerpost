@@ -1,2 +1,3 @@
 path = "/home/tonytins/Documents/"
 file = "newscycle.txt"
+communities = [ "Games", "Politics", "Research", "Technology" ]

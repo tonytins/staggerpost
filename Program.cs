@@ -3,20 +3,21 @@ const string banner = "=== Publish Times ===";
 
 var numberOfArticles = 5; // Define how many articles to schedule
 var startTime = new TimeSpan(9, 0, 0); // Starting time at 9:00 AM
-var random = new Random();
+var rng = new Random();
 var scheduledTimes = new List<TimeSpan>();
 var storeSchedule = new List<String>();
 // App directory is used for config file
 var appDir = Directory.GetCurrentDirectory();
 // File directory is used for file location set in config
 var fileDir = Directory.GetCurrentDirectory();
+var communities = new[] { "Games", "Politics", "Research", "Technology" };
 var scheduleFile = "schedule.txt";
 var cfgFile = "config.toml";
 
 for (int i = 0; i < numberOfArticles; i++)
 {
-    var baseDelayHours = random.Next(2, 4); // Randomly choose between 2-3 hours delay
-    var minutesToAdd = random.Next(0, 60); // Randomly choose minutes (0-59)
+    var baseDelayHours = rng.Next(2, 4); // Randomly choose between 2-3 hours delay
+    var minutesToAdd = rng.Next(0, 60); // Randomly choose minutes (0-59)
 
     // Calculate new time by adding base delay and random minutes
     var nextTime = startTime.Add(new TimeSpan(baseDelayHours, minutesToAdd, 0));
@@ -62,6 +63,10 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
     var cfgPath = Path.Combine(appDir, cfgFile);
     var filePath = Path.Combine(fileDir, scheduleFile);
     var appendSchedule = false;
+    var topic = "";
+
+    var chooseTopic = rng.Next(0, communities.Length);
+    topic = communities[chooseTopic];
 
     // If the config file exists, read from that but don't assume anything is filled
     if (File.Exists(cfgPath))
@@ -70,12 +75,20 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
         var model = Toml.ToModel(toml);
         var usrDir = (string)model["path"];
         var usrFileName = (string)model["file"];
+        // var usrList = (string[])model["communities"];
 
         if (!string.IsNullOrEmpty(usrDir))
             fileDir = usrDir;
 
         if (!string.IsNullOrEmpty(usrFileName))
             scheduleFile = usrFileName;
+        /*
+                if (usrList.Length > 0)
+                {
+                    var chooseUsrTopic = rng.Next(0, usrList.Length);
+                    topic = usrList[chooseUsrTopic];
+                }
+        */
 
         // Set new file Path
         filePath = Path.Combine(fileDir, scheduleFile);
@@ -92,10 +105,8 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
     // Write to file.
     using (var outputFile = new StreamWriter(filePath, appendSchedule))
     {
-        // Add separator between times
-        if (appendSchedule)
-            outputFile.WriteLine("                ---");
 
+        outputFile.WriteLine($"        === {topic} ===");
         foreach (var line in storeSchedule)
             outputFile.WriteLine(line);
     }
