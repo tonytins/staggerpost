@@ -6,6 +6,12 @@ var startTime = new TimeSpan(9, 0, 0); // Starting time at 9:00 AM
 var random = new Random();
 var scheduledTimes = new List<TimeSpan>();
 var storeSchedule = new List<String>();
+// App directory is used for config file
+var appDir = Directory.GetCurrentDirectory();
+// File directory is used for file location set in config
+var fileDir = Directory.GetCurrentDirectory();
+var scheduleFile = "schedule.txt";
+var cfgFile = "config.toml";
 
 for (int i = 0; i < numberOfArticles; i++)
 {
@@ -53,10 +59,27 @@ Console.WriteLine("Export? Y/N");
 
 if (Console.ReadKey().Key == ConsoleKey.Y)
 {
-    var appPath = Directory.GetCurrentDirectory();
-    var scheduleFile = "schedule.txt";
-    var filePath = Path.Combine(appPath, scheduleFile);
+    var cfgPath = Path.Combine(appDir, cfgFile);
+    var filePath = Path.Combine(fileDir, scheduleFile);
     var appendSchedule = false;
+
+    // If the config file exists, read from that but don't assume anything is filled
+    if (File.Exists(cfgPath))
+    {
+        var toml = File.ReadAllText(cfgPath);
+        var model = Toml.ToModel(toml);
+        var usrDir = (string)model["path"];
+        var usrFileName = (string)model["file"];
+
+        if (!string.IsNullOrEmpty(usrDir))
+            fileDir = usrDir;
+
+        if (!string.IsNullOrEmpty(usrFileName))
+            scheduleFile = usrFileName;
+
+        // Set new file Path
+        filePath = Path.Combine(fileDir, scheduleFile);
+    }
 
     // If the file already exists, assume a previous schedule was written
     if (File.Exists(filePath))
@@ -67,7 +90,7 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
     }
 
     // Write to file.
-    using (var outputFile = new StreamWriter(Path.Combine(appPath, scheduleFile), appendSchedule))
+    using (var outputFile = new StreamWriter(filePath, appendSchedule))
     {
         // Add separator between times
         if (appendSchedule)
@@ -76,11 +99,7 @@ if (Console.ReadKey().Key == ConsoleKey.Y)
         foreach (var line in storeSchedule)
             outputFile.WriteLine(line);
     }
+}
 
-    // Clear list from memory before exit
-    storeSchedule.Clear();
-}
-else
-{
-    Environment.Exit(Environment.ExitCode);
-}
+// Clear list from memory before exit
+storeSchedule.Clear();

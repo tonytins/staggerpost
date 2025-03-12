@@ -545,3 +545,4 @@ FodyWeavers.xsd
 
 .idea/**
 *.txt
+*.toml
