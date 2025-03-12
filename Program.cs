@@ -34,6 +34,11 @@ for (int i = 0; i < numberOfArticles; i++)
     startTime = nextTime; // Update start time for the next article
 }
 
+/// <summary>
+/// Converts a TimeSpan into a 12-hour AM/PM formatted time string.
+/// </summary>
+/// <param name="time">The TimeSpan representing the time of day.</param>
+/// <returns>A formatted string representing the time in AM/PM format.</returns>
 string TimeSpanToAMPM(TimeSpan time)
 {
     var minutes = time.TotalMinutes;
@@ -46,7 +51,11 @@ string TimeSpanToAMPM(TimeSpan time)
     return $"{hours12}:{time.Minutes:D2} {period}";
 }
 
-
+/// <summary>
+/// Exports the scheduled articles to a file, allowing the user to modify
+/// the directory, filename, and list of topics based on
+/// a configuration file if available.
+/// </summary>
 void ExportSchedule()
 {
     var cfgPath = Path.Combine(appDir, cfgFile);
@@ -105,6 +114,10 @@ void ExportSchedule()
 
 }
 
+/// <summary>
+/// Displays the scheduled article times in a formatted manner and provides
+/// options to export the schedule or restart the scheduling process.
+/// </summary>
 void PrintSchedule()
 {
     if (isRestart)
@@ -138,4 +151,5 @@ void PrintSchedule()
     }
 }
 
+// Start the loop
 PrintSchedule();
