@@ -84,32 +84,35 @@ string SelectTopics(List<string> topics)
     foreach (var topic in topics)
     {
         numOfTopics++;
-        topicDict.Add(numOfTopics, topic.Trim());
-        userChoices.Add($"{numOfTopics} {topic.Trim()}");
+        var title = topic.Trim();
+        topicDict.Add(numOfTopics, title);
+        userChoices.Add($"{numOfTopics} {title}");
     }
 
     var selection = string.Join(", ", userChoices.ToArray());
-    Console.WriteLine($"Select a Topic (Choose a Number){Environment.NewLine}{selection}");
+    Console.WriteLine($"{Environment.NewLine}Select a Topic (Choose a Number){Environment.NewLine}{selection}");
     var input = Console.ReadLine();
 
-    //
+    // Attempt to parse a number.
     if (int.TryParse(input, out topicNum) == true)
         topicChoice = topicDict[topicNum];
     else
-    {
-        Console.Clear();
-        Console.Write($"{Environment.NewLine}Try again.");
-        NewTopic(topics);
-    }
+        NewTopic(topics, false);
 
     return topicChoice;
 }
 
+/// <summary>
+/// Selects a new topic either by prompting the user or randomly choosing one from the list.
+/// </summary>
+/// <param name="topics">A list of available topics.</param>
+/// <param name="retry">Indicates whether to prompt the user again if no selection was made.</param>
+/// <returns>The selected topic as a string.</returns>
 string NewTopic(List<string> topics, bool retry = false)
 {
     var newTopic = "";
 
-    if (UserChoice("Choose a Topic?"))
+    if (UserChoice("Choose a Topic?") || retry)
         newTopic = SelectTopics(topics);
     else
     {
