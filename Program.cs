@@ -127,15 +127,15 @@ string NewTopic(List<string> topics)
 void ExportSchedule(List<String> storeSchedule)
 {
     // App directory is used for config file
-    var appDir = Directory.GetCurrentDirectory();
+    var appDir = AppDomain.CurrentDomain.BaseDirectory;
     // File directory is used for file location set in config
-    var fileDir = Directory.GetCurrentDirectory();
-    var communities = new[] { "Games", "Politics", "Research", "Technology" };
-    var scheduleFile = "schedule.txt";
+    var outputDir = Directory.GetCurrentDirectory();
+    var defaultTopics = new[] { "Games", "Politics", "Research", "Technology" };
+    var outputFile = "schedule.txt";
     var cfgFile = "config.toml";
 
     var cfgPath = Path.Combine(appDir, cfgFile);
-    var filePath = Path.Combine(fileDir, scheduleFile);
+    var filePath = Path.Combine(outputDir, outputFile);
     var appendSchedule = false;
     var topic = "";
 
@@ -150,19 +150,19 @@ void ExportSchedule(List<String> storeSchedule)
         var usrList = tomlList.Split(',');
 
         if (!string.IsNullOrEmpty(usrDir))
-            fileDir = usrDir;
+            outputDir = usrDir;
 
         if (!string.IsNullOrEmpty(usrFileName))
-            scheduleFile = usrFileName;
+            outputFile = usrFileName;
 
         if (usrList.Length > 0)
-            communities = usrList;
+            defaultTopics = usrList;
 
         // Set new file Path
-        filePath = Path.Combine(fileDir, scheduleFile);
+        filePath = Path.Combine(outputDir, outputFile);
     }
 
-    topic = NewTopic(communities.ToList());
+    topic = NewTopic(defaultTopics.ToList());
 
     // If the file already exists, assume a previous schedule was written
     if (File.Exists(filePath))

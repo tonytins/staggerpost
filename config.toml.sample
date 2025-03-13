@@ -1,3 +1,8 @@
 path = "/home/tonytins/Documents/"
 file = "newscycle.txt"
-topics = [ "Games", "Technology", "Cybersecurity" ]
+topics = [
+  "Games",
+  "News",
+  "Science",
+  "Programming"
+]

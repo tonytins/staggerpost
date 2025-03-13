@@ -1,3 +1,4 @@
+// I hereby waive this project under the public domain - see UNLICENSE for details.
 namespace PublishTimes;
 
 /// <summary>
