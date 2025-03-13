@@ -1,6 +1,21 @@
 // I hereby waive this project under the public domain - see UNLICENSE for details.
 
 /// <summary>
+/// Prompts the user with a yes/no question and returns their choice as a boolean value.
+/// </summary>
+/// <param name="choice">The message to display to the user.</param>
+/// <returns>True if the user selects 'Y' or presses Enter, otherwise false.</returns>
+bool UserChoice(string choice)
+{
+    Console.WriteLine($"{Environment.NewLine}{choice} Y/N");
+    var input = Console.ReadKey().Key;
+    if (input == ConsoleKey.Y || input == ConsoleKey.Enter)
+        return true;
+
+    return false;
+}
+
+/// <summary>
 /// Generates a schedule of article publishing times, ensuring a randomized
 /// delay between each while avoiding time conflicts within a 30-minute window.
 /// </summary>
@@ -52,6 +67,61 @@ string ConvertTo12Hour(TimeSpan time)
 }
 
 /// <summary>
+/// Prompts the user to select a topic from a given list
+/// and returns the chosen topic.
+/// </summary>
+/// <param name="topics">An array of available topics.</param>
+/// <returns>The selected topic as a string.</returns>
+string SelectTopics(List<string> topics)
+{
+    var topicChoice = "";
+    var topicNum = 0;
+    var userChoices = new List<string>();
+    var numOfTopics = 0;
+    var topicDict = new Dictionary<int,
+      string>();
+
+    foreach (var topic in topics)
+    {
+        numOfTopics++;
+        topicDict.Add(numOfTopics, topic.Trim());
+        userChoices.Add($"{numOfTopics} {topic.Trim()}");
+    }
+
+    var selection = string.Join(", ", userChoices.ToArray());
+    Console.WriteLine($"Select a Topic (Choose a Number){Environment.NewLine}{selection}");
+    var input = Console.ReadLine();
+
+    //
+    if (int.TryParse(input, out topicNum) == true)
+        topicChoice = topicDict[topicNum];
+    else
+    {
+        Console.Clear();
+        Console.Write($"{Environment.NewLine}Try again.");
+        NewTopic(topics);
+    }
+
+    return topicChoice;
+}
+
+string NewTopic(List<string> topics, bool retry = false)
+{
+    var newTopic = "";
+
+    if (UserChoice("Choose a Topic?"))
+        newTopic = SelectTopics(topics);
+    else
+    {
+        var rng = new Random();
+        var chooseTopic = rng.Next(0, topics.ToArray().Length);
+        newTopic = topics[chooseTopic].Trim();
+    }
+
+    return newTopic;
+}
+
+/// <summary>
 /// Exports the scheduled articles to a file, allowing the user to modify
 /// the directory, filename, and list of topics based on
 /// a configuration file if available.
@@ -71,10 +141,6 @@ void ExportSchedule(List<String> storeSchedule)
     var appendSchedule = false;
     var topic = "";
 
-    var rng = new Random();
-    var chooseTopic = rng.Next(0, communities.Length);
-    topic = communities[chooseTopic];
-
     // If the config file exists, read from that but don't assume anything is filled
     if (File.Exists(cfgPath))
     {
@@ -92,21 +158,18 @@ void ExportSchedule(List<String> storeSchedule)
             scheduleFile = usrFileName;
 
         if (usrList.Length > 0)
-        {
-            var chooseUsrTopic = rng.Next(0, usrList.Length);
-            topic = usrList[chooseUsrTopic];
-        }
-
+            communities = usrList;
 
         // Set new file Path
         filePath = Path.Combine(fileDir, scheduleFile);
     }
 
+    topic = NewTopic(communities.ToList());
+
     // If the file already exists, assume a previous schedule was written
     if (File.Exists(filePath))
     {
-        Console.WriteLine($"{Environment.NewLine}Add another schedule? Y/N");
-        if (Console.ReadKey().Key == ConsoleKey.Y)
+        if (UserChoice("Add to existing file?"))
             appendSchedule = true;
 
         // Write to file.
@@ -146,12 +209,14 @@ void PrintSchedule(bool isRestart = false)
     }
 
     // Give the user an option to export the schedule
-    Console.WriteLine($"{Environment.NewLine}Export? Y/N");
-    if (Console.ReadKey().Key == ConsoleKey.Y)
+    if (UserChoice("Retry?"))
+        PrintSchedule(true);
+
+    // Give the user an option to export the schedule
+    if (UserChoice("Export?"))
         ExportSchedule(storeSchedule);
 
-    Console.WriteLine($"{Environment.NewLine}Start Over? Y/N");
-    if (Console.ReadKey().Key == ConsoleKey.Y)
+    if (UserChoice("Generate A New Batch?"))
         PrintSchedule(true);
     else
     {
