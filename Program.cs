@@ -97,29 +97,24 @@ string SelectTopics(List<string> topics)
     if (int.TryParse(input, out topicNum) == true)
         topicChoice = topicDict[topicNum];
     else
-        NewTopic(topics, false);
+        NewTopic(topics);
 
     return topicChoice;
 }
 
 /// <summary>
-/// Selects a new topic either by prompting the user or randomly choosing one from the list.
+/// Allows the user to choose a new topic from a given list or default to placeholder if no selection is made.
 /// </summary>
 /// <param name="topics">A list of available topics.</param>
-/// <param name="retry">Indicates whether to prompt the user again if no selection was made.</param>
-/// <returns>The selected topic as a string.</returns>
-string NewTopic(List<string> topics, bool retry = false)
+/// <returns>The selected topic or a default placeholder if none is chosen.</returns>
+string NewTopic(List<string> topics)
 {
     var newTopic = "";
 
-    if (UserChoice("Choose a Topic?") || retry)
+    if (UserChoice("Choose a Topic?"))
         newTopic = SelectTopics(topics);
     else
-    {
-        var rng = new Random();
-        var chooseTopic = rng.Next(0, topics.ToArray().Length);
-        newTopic = topics[chooseTopic].Trim();
-    }
+        newTopic = "===";
 
     return newTopic;
 }
