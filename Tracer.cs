@@ -13,7 +13,7 @@ internal static class Tracer
     /// <param name="content">The text to write to the console.</param>
     [Conditional("DEBUG")]
     internal static void WriteLine(string content) =>
-        Console.WriteLine(content);
+      Console.WriteLine(content);
 
     /// <summary>
     /// Writes text to the console without a newline, but only when in DEBUG mode.
@@ -21,7 +21,7 @@ internal static class Tracer
     /// <param name="content">The text to write to the console.</param>
     [Conditional("DEBUG")]
     internal static void Write(string content) =>
-        Console.Write(content);
+      Console.Write(content);
 
     /// <summary>
     /// Writes multiple lines of text to the console, but only when in DEBUG mode.
@@ -59,7 +59,7 @@ internal static class Tracer
 #if DEBUG
             return Directory.GetCurrentDirectory();
 #else
-  return  AppDomain.CurrentDomain.BaseDirectory;
+      return AppDomain.CurrentDomain.BaseDirectory;
 #endif
         }
     }

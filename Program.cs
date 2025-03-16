@@ -262,7 +262,7 @@ void ExportSchedule(List<String> storeTimes)
     jsonList.Add(new Schedule()
     {
         Topic = chosenTopic.Trim(),
-        Date = date,
+        Date = date.Trim(),
         Times = times,
     });
 
