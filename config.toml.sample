@@ -1,5 +1,5 @@
 path = "/home/tonytins/Documents/"
-file = "newscycle.txt"
+file = "newscycle.json"
 topics = [
   "Games",
   "News",

@@ -546,3 +546,4 @@ FodyWeavers.xsd
 .idea/**
 *.txt
 *.toml
+*.json

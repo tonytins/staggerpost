@@ -1,6 +1,28 @@
 // I hereby waive this project under the public domain - see UNLICENSE for details.
 
 /// <summary>
+/// Retrieves configuration settings from a TOML file if it exists; otherwise, returns a default configuration.
+/// </summary>
+/// <param name="file">The name of the configuration file (defaults to "config.toml").</param>
+/// <returns>A Config object populated with values from the file, or a default Config instance if the file is not found.</returns>
+Config GetConfig(string file = "config.toml")
+{
+    // App directory is used for config file
+    var appDir = AppDomain.CurrentDomain.BaseDirectory;
+    var cfgPath = Path.Combine(appDir, file);
+
+    if (File.Exists(cfgPath))
+    {
+        var toml = File.ReadAllText(cfgPath);
+        var model = Toml.ToModel<Config>(toml);
+
+        return model;
+    }
+
+    return new Config();
+}
+
+/// <summary>
 /// Prompts the user with a yes/no question and returns their choice as a boolean value.
 /// </summary>
 /// <param name="choice">The message to display to the user.</param>
@@ -90,7 +112,7 @@ string SelectTopics(List<string> topics)
     }
 
     var selection = string.Join(", ", userChoices.ToArray());
-    Console.WriteLine($"{Environment.NewLine}Select a Topic (Choose a Number){Environment.NewLine}{selection}");
+    Console.WriteLine($"{Environment.NewLine}Select a Number{Environment.NewLine}{selection}");
     var input = Console.ReadLine();
 
     // Attempt to parse a number.
@@ -114,7 +136,7 @@ string NewTopic(List<string> topics)
     if (UserChoice("Choose a Topic?"))
         newTopic = SelectTopics(topics);
     else
-        newTopic = "===";
+        newTopic = "Any";
 
     return newTopic;
 }
@@ -130,24 +152,24 @@ void ExportSchedule(List<String> storeSchedule)
     var appDir = AppDomain.CurrentDomain.BaseDirectory;
     // File directory is used for file location set in config
     var outputDir = Directory.GetCurrentDirectory();
-    var defaultTopics = new[] { "Games", "Politics", "Research", "Technology" };
-    var outputFile = "schedule.txt";
     var cfgFile = "config.toml";
 
+    var topics = new List<string>();
     var cfgPath = Path.Combine(appDir, cfgFile);
-    var filePath = Path.Combine(outputDir, outputFile);
-    var appendSchedule = false;
-    var topic = "";
+    var config = GetConfig(cfgPath);
+    var outputFile = config.File;
+    var filePath = Path.Combine(outputDir, outputFile!);
+    var chosenTopic = "";
+
 
     // If the config file exists, read from that but don't assume anything is filled
     if (File.Exists(cfgPath))
     {
         var toml = File.ReadAllText(cfgPath);
-        var model = Toml.ToModel<Config>(toml);
-        var usrDir = model.Path;
-        var usrFileName = model.File;
-        var tomlList = string.Join(", ", model.Topics);
-        var usrList = tomlList.Split(',');
+        var usrDir = config.Path;
+        var usrFileName = config.File;
+        // Convert list into array
+        var usrTopics = config.Topics;
 
         if (!string.IsNullOrEmpty(usrDir))
             outputDir = usrDir;
@@ -155,33 +177,42 @@ void ExportSchedule(List<String> storeSchedule)
         if (!string.IsNullOrEmpty(usrFileName))
             outputFile = usrFileName;
 
-        if (usrList.Length > 0)
-            defaultTopics = usrList;
+        // If array is populated, apply config
+        if (!usrTopics.Any())
+        {
+            foreach (var usrTopic in usrTopics)
+                topics.Add(usrTopic);
+        }
 
         // Set new file Path
-        filePath = Path.Combine(outputDir, outputFile);
+        filePath = Path.Combine(outputDir, outputFile!);
     }
 
-    topic = NewTopic(defaultTopics.ToList());
+    // Set new topic
+    topics = config.Topics.ToList();
+    chosenTopic = NewTopic(topics);
 
-    // If the file already exists, assume a previous schedule was written
-    if (File.Exists(filePath))
+    // Write to file.
+    JsonWriterOptions options = new()
     {
-        if (UserChoice("Add to existing file?"))
-            appendSchedule = true;
+        Indented = true
+    };
 
-        // Write to file.
-        using (var outputFile = new StreamWriter(filePath, appendSchedule))
-        {
-            outputFile.WriteLine($"        === {topic} ===");
-            foreach (var line in storeSchedule)
-                outputFile.WriteLine(line);
-        }
-    }
+    var jsonList = JsonSerializer.Deserialize<List<Schedule>>(filePath)
+                          ?? new List<Schedule>();
 
-    // Clear list from memory before exit
+    jsonList.Add(new Schedule()
+    {
+        Topic = chosenTopic,
+        Times = storeSchedule,
+    });
+    var jsonString = JsonSerializer.Serialize(jsonList);
+    Console.WriteLine(jsonString);
+    // File.WriteAllText(filePath, jsonString);
+    Console.WriteLine($"{Environment.NewLine}Written to: {filePath}");
+
+    // Clear list from memory
     storeSchedule.Clear();
-
 }
 
 /// <summary>
@@ -193,13 +224,14 @@ void PrintSchedule(bool isRestart = false)
     var storeSchedule = new List<String>();
     var scheduledTimes = GenerateSchedule();
 
+    // Clear the screen on restart
     if (isRestart)
         Console.Clear();
 
     Console.WriteLine("=== Publish Times ===");
     foreach (var time in scheduledTimes)
     {
-        var articleTime = $"Article {scheduledTimes.IndexOf(time) + 1} Scheduled at: {ConvertTo12Hour(time)}";
+        var articleTime = $"{ConvertTo12Hour(time)}";
         // Correct format string to display time in 12-hour format with AM/PM
         Console.WriteLine(articleTime);
         // Store the schedule to memory for option export
