@@ -116,8 +116,8 @@ string SelectTopics(List<string> topics)
         userChoices.Add($"{numOfTopics} {title}");
     }
 
-    var selection = string.Join(", ", userChoices.ToArray());
-    Console.WriteLine($"{Environment.NewLine}Select a Number{Environment.NewLine}{selection}");
+    var topicSelect = string.Join(", ", userChoices.ToArray());
+    Console.WriteLine($"{Environment.NewLine}Choose a Topic{Environment.NewLine}{topicSelect}");
     var input = Console.ReadLine();
 
     // Attempt to parse a number.
@@ -127,6 +127,45 @@ string SelectTopics(List<string> topics)
         NewTopic(topics);
 
     return topicChoice;
+}
+
+/// <summary>
+/// Prompts the user to select a date (either today or tomorrow) and returns the selected date as a formatted string.
+/// </summary>
+/// <returns>A string representing the selected date in a short date format.</returns>
+string SelectDate()
+{
+    var dtChoices = new[] { "Today", "Tomorrow" };
+    var dtDict = new Dictionary<int,
+      string>();
+    var dtSelection = new List<string>();
+    var dtChoice = 0;
+    var dtNum = 0;
+
+    foreach (var days in dtChoices)
+    {
+        dtNum++;
+        var day = days.Trim();
+        dtDict.Add(dtNum, day);
+        dtSelection.Add($"{dtNum} {day}");
+    }
+
+    var topicSelect = string.Join(", ", dtSelection.ToArray());
+    Console.WriteLine($"{Environment.NewLine}Choose a Date{Environment.NewLine}{topicSelect}");
+    var input = Console.ReadLine();
+
+    // Attempt to parse a number.
+    if (int.TryParse(input, out dtNum) == true)
+        dtChoice = dtNum;
+
+    // Any choice above 2 tomorrow
+    if (dtChoice >= 2)
+    {
+        var dt = DateTime.Now.AddDays(1);
+        return dt.ToString("d");
+    }
+
+    return DateTime.Today.ToString("d");
 }
 
 /// <summary>
@@ -212,6 +251,8 @@ void ExportSchedule(List<String> storeTimes)
     topics = config.Topics.ToList();
     chosenTopic = NewTopic(topics);
 
+    var date = SelectDate();
+
     // Write to file.
     var jsonContent = File.ReadAllText(filePath);
     var jsonList = string.IsNullOrWhiteSpace(jsonContent) ? new List<Schedule>()
@@ -221,6 +262,7 @@ void ExportSchedule(List<String> storeTimes)
     jsonList.Add(new Schedule()
     {
         Topic = chosenTopic.Trim(),
+        Date = date,
         Times = times,
     });
 
