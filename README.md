@@ -6,11 +6,28 @@ It is not recommended for use with hot topics. Instead, you should focus on over
 
 ## Exporting
 
-Once it generates a list of times, you can retry or export the times. If you export, you're requested to select from a number of topics or default to none if no selection is made. Upon export, you can start over or exit.
+Once it generates a list of times, you can retry or export it as a JSON format. If you export, you're requested to select from a number of topics or default to none if no selection is made. Upon export, you can start over or exit.
 
 Choice selection is based on the Y/N keys. ``Enter`` works the same as ``Y`` while pressing any other key is the equivalent of ``N``. You can make mistakes, but it expects failure.
 
 An optional ``config.toml`` file allows for further customization of file name, directory, and topics.
+
+### Example
+
+```json
+[
+  {
+    "topic": "Games",
+    "times": [
+      "11:41 AM",
+      "2:05 PM",
+      "5:05 PM",
+      "8:18 PM",
+      "11:02 PM"
+    ]
+  }
+]
+```
 
 ## Background
 

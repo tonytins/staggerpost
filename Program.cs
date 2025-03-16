@@ -18,8 +18,13 @@ Config GetConfig(string file = "config.toml")
 
         return model;
     }
-
-    return new Config();
+    var defaultList = new[] { "Games", "Politics", "Research", "Technology" };
+    return new Config()
+    {
+        File = "schedule.json",
+        Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        Topics = defaultList.ToList()
+    };
 }
 
 /// <summary>
@@ -42,7 +47,7 @@ bool UserChoice(string choice)
 /// delay between each while avoiding time conflicts within a 30-minute window.
 /// </summary>
 /// <returns>A list of TimeSpan objects representing scheduled article times.</returns>
-List<TimeSpan> GenerateSchedule()
+List<TimeSpan> GenerateTimes()
 {
     var numberOfArticles = 5; // Define how many articles to schedule
     var startTime = new TimeSpan(9, 0, 0); // Starting time at 9:00 AM
@@ -149,7 +154,7 @@ string NewTopic(List<string> topics)
 void ExportSchedule(List<String> storeTimes)
 {
     // App directory is used for config file
-    var appDir = AppDomain.CurrentDomain.BaseDirectory;
+    var appDir = Tracer.AppDirectory;
     // File directory is used for file location set in config
     var outputDir = Directory.GetCurrentDirectory();
     var cfgFile = "config.toml";
@@ -166,24 +171,32 @@ void ExportSchedule(List<String> storeTimes)
     // If the config file exists, read from that but don't assume anything is filled
     if (File.Exists(cfgPath))
     {
+        Tracer.WriteLine(cfgPath);
         var toml = File.ReadAllText(cfgPath);
         var usrDir = config.Path;
         var usrFileName = config.File;
         // Convert list into array
-        var usrTopics = config.Topics;
+        var list = config.Topics;
+        var tomlList = string.Join(", ", list);
+        var usrTopics = tomlList.Split(',');
 
-        if (!string.IsNullOrEmpty(usrDir))
-            outputDir = usrDir;
+        if (string.IsNullOrEmpty(usrDir))
+            return;
 
-        if (!string.IsNullOrEmpty(usrFileName))
-            outputFile = usrFileName;
+        outputDir = usrDir;
 
-        // If array is populated, apply config
-        if (!usrTopics.Any())
-        {
-            foreach (var usrTopic in usrTopics)
-                topics.Add(usrTopic);
-        }
+        if (string.IsNullOrEmpty(usrFileName))
+            return;
+
+        outputFile = usrFileName;
+
+        // If array is empty, return; otherwise, apply config
+        if (usrTopics.Length < 0)
+            return;
+
+        foreach (var usrTopic in usrTopics)
+            topics.Add(usrTopic);
+
 
         // Set new file Path
         filePath = Path.Combine(outputDir, outputFile!);
@@ -211,10 +224,14 @@ void ExportSchedule(List<String> storeTimes)
         Times = times,
     });
 
-    var jsonString = JsonSerializer.Serialize(jsonList);
-    Console.WriteLine(jsonList);
+    var jsonOptions = new JsonSerializerOptions()
+    {
+        WriteIndented = true,
+    };
+
+    var jsonString = JsonSerializer.Serialize(jsonList, jsonOptions);
     File.WriteAllText(filePath, jsonString);
-    Console.WriteLine($"{Environment.NewLine}Written to: {filePath}");
+    Tracer.WriteLine($"{jsonString}{Environment.NewLine}Written to: {filePath}");
 
     // Clear list from memory
     storeTimes.Clear();
@@ -224,10 +241,10 @@ void ExportSchedule(List<String> storeTimes)
 /// Displays the scheduled article times in a formatted manner and provides
 /// options to export the schedule or restart the scheduling process.
 /// </summary>
-void PrintSchedule(bool isRestart = false)
+void PrintTimes(bool isRestart = false)
 {
     var storeSchedule = new List<String>();
-    var scheduledTimes = GenerateSchedule();
+    var scheduledTimes = GenerateTimes();
 
     // Clear the screen on restart
     if (isRestart)
@@ -245,14 +262,14 @@ void PrintSchedule(bool isRestart = false)
 
     // Give the user an option to export the schedule
     if (UserChoice("Retry?"))
-        PrintSchedule(true);
+        PrintTimes(true);
 
     // Give the user an option to export the schedule
     if (UserChoice("Export?"))
         ExportSchedule(storeSchedule);
 
     if (UserChoice("Generate A New Batch?"))
-        PrintSchedule(true);
+        PrintTimes(true);
     else
     {
         Console.Clear();
@@ -261,4 +278,4 @@ void PrintSchedule(bool isRestart = false)
 }
 
 // Start the loop
-PrintSchedule();
+PrintTimes();

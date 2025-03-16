@@ -1,3 +1,4 @@
+global using System.Diagnostics;
 global using Tomlyn;
 global using Tomlyn.Model;
 global using PublishTimes;
