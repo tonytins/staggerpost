@@ -10,7 +10,7 @@ public class Config
     /// <summary>
     /// Gets or sets the name of the schedule file.
     /// </summary>
-    public string File { get; set; } = "schedule.txt";
+    public string File { get; set; } = "schedule.json";
 
     /// <summary>
     /// Gets or sets the directory path where the schedule file is stored.

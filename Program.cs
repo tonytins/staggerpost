@@ -146,7 +146,7 @@ string NewTopic(List<string> topics)
 /// the directory, filename, and list of topics based on
 /// a configuration file if available.
 /// </summary>
-void ExportSchedule(List<String> storeSchedule)
+void ExportSchedule(List<String> storeTimes)
 {
     // App directory is used for config file
     var appDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -160,6 +160,7 @@ void ExportSchedule(List<String> storeSchedule)
     var outputFile = config.File;
     var filePath = Path.Combine(outputDir, outputFile!);
     var chosenTopic = "";
+    var times = new List<string>();
 
 
     // If the config file exists, read from that but don't assume anything is filled
@@ -188,31 +189,35 @@ void ExportSchedule(List<String> storeSchedule)
         filePath = Path.Combine(outputDir, outputFile!);
     }
 
+    if (!File.Exists(filePath))
+        File.WriteAllText(filePath, "[]");
+
+    foreach (var time in storeTimes)
+        times.Add(time.Trim());
+
     // Set new topic
     topics = config.Topics.ToList();
     chosenTopic = NewTopic(topics);
 
     // Write to file.
-    JsonWriterOptions options = new()
-    {
-        Indented = true
-    };
+    var jsonContent = File.ReadAllText(filePath);
+    var jsonList = string.IsNullOrWhiteSpace(jsonContent) ? new List<Schedule>()
+                  : JsonSerializer.Deserialize<List<Schedule>>(jsonContent) ?? new List<Schedule>();
 
-    var jsonList = JsonSerializer.Deserialize<List<Schedule>>(filePath)
-                          ?? new List<Schedule>();
 
     jsonList.Add(new Schedule()
     {
-        Topic = chosenTopic,
-        Times = storeSchedule,
+        Topic = chosenTopic.Trim(),
+        Times = times,
     });
+
     var jsonString = JsonSerializer.Serialize(jsonList);
-    Console.WriteLine(jsonString);
-    // File.WriteAllText(filePath, jsonString);
+    Console.WriteLine(jsonList);
+    File.WriteAllText(filePath, jsonString);
     Console.WriteLine($"{Environment.NewLine}Written to: {filePath}");
 
     // Clear list from memory
-    storeSchedule.Clear();
+    storeTimes.Clear();
 }
 
 /// <summary>
