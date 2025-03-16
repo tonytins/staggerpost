@@ -18,6 +18,7 @@ An optional ``config.toml`` file allows for further customization of file name, 
 [
   {
     "topic": "Games",
+    "date": "3/16/2025",
     "times": [
       "11:41 AM",
       "2:05 PM",
