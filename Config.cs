@@ -1,5 +1,5 @@
 // I hereby waive this project under the public domain - see UNLICENSE for details.
-namespace PublishTimes;
+namespace StaggerPost;
 
 /// <summary>
 /// Represents the configuration settings for exporting a schedule,

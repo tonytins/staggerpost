@@ -1,4 +1,4 @@
-# Publish Times
+# StaggerPost
 
 This is a very simple console application that generates a list of times to publish news articles within a randomized 2-3 hour delay within a 30-minute window to avoid conflicts. This keeps thing flowing at an organic and slow pace.
 
