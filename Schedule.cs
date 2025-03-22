@@ -1,12 +1,11 @@
-
 public class Schedule
 {
-    [JsonPropertyName("topic")]
-    public string Topic { get; set; } = "";
+	[JsonPropertyName("community")]
+	public string Community { get; set; } = "";
 
-    [JsonPropertyName("date")]
-    public string Date { get; set; } = "";
+	[JsonPropertyName("date")]
+	public string Date { get; set; } = "";
 
-    [JsonPropertyName("times")]
-    public IList<string> Times { get; set; } = new List<string>();
+	[JsonPropertyName("times")]
+	public IList<string> Times { get; set; } = new List<string>();
 }

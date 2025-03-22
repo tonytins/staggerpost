@@ -7,19 +7,18 @@ namespace StaggerPost;
 /// </summary>
 public class Config
 {
-    /// <summary>
-    /// Gets or sets the name of the schedule file.
-    /// </summary>
-    public string? File { get; set; }
+	/// <summary>
+	/// Gets or sets the name of the schedule file.
+	/// </summary>
+	public string? File { get; set; }
 
-    /// <summary>
-    /// Gets or sets the directory path where the schedule file is stored.
-    /// </summary>
-    public string? Path { get; set; }
+	/// <summary>
+	/// Gets or sets the directory path where the schedule file is stored.
+	/// </summary>
+	public string? Path { get; set; }
 
-    /// <summary>
-    /// Gets or sets the list of available topics from the configuration file.
-    /// </summary>
-    public List<string> Topics { get; set; } = new List<string>();
-
+	/// <summary>
+	/// Gets or sets the list of available topics from the configuration file.
+	/// </summary>
+	public List<string> Communities { get; set; } = new List<string>();
 }

@@ -1,6 +1,6 @@
 # StaggerPost
 
-This is a very simple console application that generates a list of times to publish news articles within a randomized 2-3 hour delay within a 30-minute window to avoid conflicts. This keeps thing flowing at an organic and slow pace.
+This is a very simple console application that suggests a list of times to post news articles within a randomized 2-3 hour and 30-minute delay to avoid conflicts. This keeps thing flowing at an organic and slow pace.
 
 It is not recommended for use with hot topics. Instead, you should focus on overlooked foreign affairs, local news or op-eds. Of course, this is just covering general news.
 

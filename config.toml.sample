@@ -1,6 +1,6 @@
 path = "/home/tonytins/Documents/"
 file = "newscycle.json"
-topics = [
+communities = [
   "Games",
   "News",
   "Science",
