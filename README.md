@@ -16,7 +16,7 @@ An optional ``config.toml`` file allows for further customization of file name, 
 
 ```json
 [
-	{
+  {
     "community": "games@lemmy.world",
     "date": "3/22/2025",
     "times": [
