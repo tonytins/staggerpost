@@ -37,13 +37,11 @@ internal static class Interactive
 			numOfTopics++;
 			var title = community.Trim();
 			topicDict.Add(numOfTopics, title);
-			userChoices.Add(
-				$"{Environment.NewLine}{numOfTopics} {title.TrimEnd(new char[] { ',' })}"
-			);
+			userChoices.Add($"{Environment.NewLine}{numOfTopics} {title}");
 		}
 
 		var topicSelect = string.Join(", ", userChoices.ToArray());
-		Console.WriteLine($"{Environment.NewLine}Choose a Topic{Environment.NewLine}{topicSelect}");
+		Console.WriteLine($"Choose a Topic{Environment.NewLine}{topicSelect}");
 		var input = Console.ReadLine();
 
 		// Attempt to parse a number.

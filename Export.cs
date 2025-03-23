@@ -48,9 +48,9 @@ internal static class Export
 	public static void ToJSON(List<String> storeTimes, string cfgPath)
 	{
 		// File directory is used for file location set in config
-		var outputDir = Directory.GetCurrentDirectory();
 		var topics = new List<string>();
 		var config = GetConfig(cfgPath);
+		var outputDir = Tracer.OutputDirectory(config.Path!);
 		var outputFile = config.File;
 		var filePath = Path.Combine(outputDir, outputFile!);
 		var chosenTopic = "";

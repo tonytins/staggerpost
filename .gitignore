@@ -546,4 +546,4 @@ FodyWeavers.xsd
 .idea/**
 *.txt
 *.toml
-schedule.json
+example.json

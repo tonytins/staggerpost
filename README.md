@@ -1,8 +1,8 @@
-# StaggerPost
+# Stagger Post
 
 This is a very simple console application that suggests a list of times to post news articles within a randomized 2-3 hour and 30-minute delay to avoid conflicts. This keeps thing flowing at an organic and slow pace.
 
-It is not recommended for use with hot topics. Instead, you should focus on overlooked foreign affairs, local news or op-eds. Of course, this is just covering general news.
+It is not recommended for use with breaking news, of course. Instead, you should focus on overlooked local news or op-eds. Of course, this is just covering general news. It is really good niche communities.
 
 ## Exporting
 
@@ -16,15 +16,15 @@ An optional ``config.toml`` file allows for further customization of file name, 
 
 ```json
 [
-  {
-    "topic": "Games",
-    "date": "3/16/2025",
+	{
+    "community": "games@lemmy.world",
+    "date": "3/22/2025",
     "times": [
-      "11:41 AM",
-      "2:05 PM",
-      "5:05 PM",
-      "8:18 PM",
-      "11:02 PM"
+      "1:34 PM",
+      "3:03 PM",
+      "5:27 PM",
+      "9:13 PM",
+      "11:37 PM"
     ]
   }
 ]

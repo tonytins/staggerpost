@@ -1,5 +1,5 @@
-path = "/home/tonytins/Documents/"
-file = "newscycle.json"
+path = "/"
+file = "example.json"
 communities = [
   "Games",
   "News",
