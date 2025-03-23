@@ -12,7 +12,7 @@ void PrintTimes()
 	// Clear the screen on restart
 	Console.Clear();
 
-	Console.WriteLine("=== Publish Times ===");
+	Console.WriteLine("=== Stagger Post ===");
 	foreach (var time in scheduledTimes)
 	{
 		var articleTime = $"{Generator.ConvertTo12Hour(time)}";
