@@ -67,7 +67,7 @@ internal static class Tracer
 	/// <summary>
 	/// Determines the appropriate output directory based on the given directory path.
 	/// In DEBUG mode, it always returns the current working directory.
-	/// In release mode, it returns the provided directory unless it contains a '/', in which case it defaults to the current directory.
+	/// In release mode, it returns the provided directory unless it contains a "/.", in which case it defaults to the current directory.
 	/// </summary>
 	/// <param name="dir">The directory path to evaluate.</param>
 	/// <returns>The resolved output directory as a string.</returns>
@@ -78,7 +78,7 @@ internal static class Tracer
 #if DEBUG
 		return curDir;
 #else
-		if (dir.Contains("/"))
+		if (dir.Contains("/."))
 			return curDir;
 
 		return dir;
