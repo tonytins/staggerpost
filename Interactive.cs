@@ -10,10 +10,14 @@ internal static class Interactive
 	/// <returns>True if the user selects 'Y' or presses Enter, otherwise false.</returns>
 	public static bool UserChoice(string choice)
 	{
-		Console.WriteLine($"{Environment.NewLine}{choice} Y/N");
+		Console.Write($"{Environment.NewLine}{choice} Y/N: ");
 		var input = Console.ReadKey().Key;
 		if (input == ConsoleKey.Y || input == ConsoleKey.Enter)
 			return true;
+
+		// Redundant measure
+		if (input == ConsoleKey.Escape)
+			Environment.Exit(Environment.ExitCode);
 
 		return false;
 	}
@@ -40,8 +44,11 @@ internal static class Interactive
 			userChoices.Add($"{Environment.NewLine}{numOfTopics} {title}");
 		}
 
-		var topicSelect = string.Join(", ", userChoices.ToArray());
-		Console.WriteLine($"Choose a Topic{Environment.NewLine}{topicSelect}");
+		Console.WriteLine("=== Choose a Community ===");
+		foreach (var choices in userChoices)
+			Console.Write(choices);
+
+		Console.Write($"{Environment.NewLine}{Environment.NewLine}Type a number: ");
 		var input = Console.ReadLine();
 
 		// Attempt to parse a number.
