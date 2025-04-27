@@ -9,7 +9,7 @@ It is not recommended for use with breaking news, of course. Instead, you should
 * [x] User Input and Name Bias
 * [x] JSON Export
 
-## Exporting
+## 📩 Exporting
 
 Once it generates a list of times, you can retry or export it as a JSON format. If you export, you're requested to select from a number of topics or default to none if no selection is made. Upon export, you can start over or exit.
 
